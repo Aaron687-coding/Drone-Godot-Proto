@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://dwbk3g5shawj8"]
+
+[ext_resource type="PackedScene" uid="uid://dpu0q5useeck2" path="res://drone.blend" id="1_4i7ja"]
+
+[node name="CharacterBody3D" type="CharacterBody3D"]
+
+[node name="drone" parent="." instance=ExtResource("1_4i7ja")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0183118, 0, 0.0995398)
