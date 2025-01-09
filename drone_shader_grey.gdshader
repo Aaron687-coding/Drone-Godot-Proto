@@ -32,23 +32,40 @@ void vertex() {
 }
 
 void fragment() {
+	
+	float basic_fresnel = fresnel(4.0, NORMAL, VIEW);
+	
 	vec2 base_uv = UV;
 
 	vec4 albedo_tex = texture(texture_albedo, base_uv);
-	ALBEDO = albedo.rgb * albedo_tex.rgb;
+	ALBEDO = albedo_tex.rgb + (basic_fresnel * texture(fresnel_gradient, vec2(basic_fresnel,0.0)).rgb * 1.0);
+
 
 	float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
 	METALLIC = metallic_tex * metallic;
 	SPECULAR = specular;
 
-	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
+	vec4 roughness_texture_channel = vec4(0.0, 1.0, 0.0, 0.0);
 	float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);
 	ROUGHNESS = roughness_tex * roughness;
 }
 
+/*void light() {
+	float NdotL = dot(NORMAL, LIGHT);
+	float toon_threshold = 0.01;
+	
+	// Create sharp toon shading steps
+	float light_intensity = smoothstep(0.0, toon_threshold, NdotL) * ATTENUATION;
+	
+	// Sample the gradient for toon shading color
+	vec4 shaded = texture(color_gradient, vec2(light_intensity, 0.0));
+	
+	// Combine with light color and add to final diffuse light
+	DIFFUSE_LIGHT = max(DIFFUSE_LIGHT, shaded.rgb * LIGHT_COLOR * light_intensity);
+}*/
 void light() {
-	float dotproduct = clamp(dot(NORMAL, LIGHT), -0.9, 0.9);
+	float dotproduct = clamp(dot (NORMAL, LIGHT), -0.9, 0.9);
 	float sample = clamp((dotproduct + 1.0) * ATTENUATION / 2.1, 0.05, 0.95);
 	vec4 shaded = texture(color_gradient, vec2(sample, 0.0));
-	DIFFUSE_LIGHT += clamp((shaded.rgb + LIGHT_COLOR), 0.0, 1.0);
+	DIFFUSE_LIGHT = clamp((shaded.rgb * LIGHT_COLOR), 0.0, 1.0);
 }
