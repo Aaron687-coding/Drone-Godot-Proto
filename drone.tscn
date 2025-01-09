@@ -284,17 +284,10 @@ void fragment() {
 }
 
 void light() {
-	float NdotL = dot(NORMAL, LIGHT);
-	float toon_threshold = 0.01;
-
-	// Create sharp toon shading steps
-	float light_intensity = smoothstep(0.0, toon_threshold, NdotL) * ATTENUATION;
-
-	// Sample the gradient for toon shading color
-	vec4 shaded = texture(color_gradient, vec2(light_intensity, 0.0));
-
-	// Combine with light color and add to final diffuse light
-	DIFFUSE_LIGHT = max(DIFFUSE_LIGHT, shaded.rgb * LIGHT_COLOR * light_intensity);
+	float dotproduct = clamp(dot (NORMAL, LIGHT), -0.9, 0.9);
+	float sample = clamp((dotproduct + 1.0) * ATTENUATION / 2.0, 0.25, 0.9);
+	vec4 shaded = texture(color_gradient, vec2(sample, 0.0));
+	DIFFUSE_LIGHT += clamp((shaded.rgb * LIGHT_COLOR), 0.0, 1.0);
 }
 "
 
@@ -598,6 +591,7 @@ surface_material_override/0 = SubResource("ShaderMaterial_hqmyp")
 surface_material_override/1 = SubResource("ShaderMaterial_b74q6")
 
 [node name="Cylinder_001" type="MeshInstance3D" parent="Drone Rig/Skeleton3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.10194)
 mesh = SubResource("ArrayMesh_4ois4")
 skin = SubResource("Skin_spgmi")
 surface_material_override/0 = SubResource("ShaderMaterial_a6e6c")

@@ -38,7 +38,7 @@ void fragment() {
 	vec2 base_uv = UV;
 
 	vec4 albedo_tex = texture(texture_albedo, base_uv);
-	ALBEDO = albedo_tex.rgb + (basic_fresnel * texture(fresnel_gradient, vec2(basic_fresnel,0.0)).rgb * 1.0);
+	ALBEDO = albedo_tex.rgb * albedo.rgb + (basic_fresnel * texture(fresnel_gradient, vec2(basic_fresnel,0.0)).rgb * 1.0);
 
 
 	float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
@@ -67,5 +67,5 @@ void light() {
 	float dotproduct = clamp(dot (NORMAL, LIGHT), -0.9, 0.9);
 	float sample = clamp((dotproduct + 1.0) * ATTENUATION / 2.1, 0.05, 0.95);
 	vec4 shaded = texture(color_gradient, vec2(sample, 0.0));
-	DIFFUSE_LIGHT = clamp((shaded.rgb * LIGHT_COLOR), 0.0, 1.0);
+	DIFFUSE_LIGHT += clamp((shaded.rgb * LIGHT_COLOR), 0.0, 1.0);
 }
